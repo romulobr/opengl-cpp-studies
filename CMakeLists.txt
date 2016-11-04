@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------
-# 
+#
 #----------------------------------------------------------------------
 cmake_minimum_required(VERSION 2.8)
 
@@ -39,19 +39,18 @@ find_path(GLFW_INCLUDE_DIR GLFW/glfw3.h ${HEADER_SEARCH_PATH})
 # Find glfw library
 find_library(GLFW_LIBRARIES glfw3 ${LIBRARY_SEARCH_PATH})
 
+find_package(GLEW REQUIRED)
+if (GLEW_FOUND)
+    include_directories(${GLEW_INCLUDE_DIRS})
+    link_libraries(${GLEW_LIBRARIES})
+endif()
+
 
 # Set additional libs
-set( ADDITIONAL_LIBS  
-    -lglfw3 
-    -lGL 
-    -lX11 
-    -lXi 
-    -lXrandr 
-    -lXxf86vm 
-    -lXinerama 
-    -lXcursor 
-    -lrt 
-    -lm 
+set( ADDITIONAL_LIBS
+    -lglfw3
+    -lglew
+    -lm
     -pthread
     -ldl
 )
@@ -69,7 +68,7 @@ set(LIBRARIES
   ${OPENGL_LIBRARIES}
   ${GLFW_LIBRARIES}
   ${X11_LIBRARIES}
-  ${ADDITIONAL_LIBS}  
+  ${ADDITIONAL_LIBS}
 )
 
 
@@ -80,7 +79,7 @@ find_path(GLEW_INCLUDE_DIR GL/glew.h
 
 
 set(INCLUDE_PATH ${INCUDE_PATH}
-    ${GLEW_INCLUDE_DIR} 
+    ${GLEW_INCLUDE_DIR}
 )
 
  include_directories ("${PROJECT_SOURCE_DIR}/include")

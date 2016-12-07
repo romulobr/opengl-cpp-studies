@@ -48,11 +48,7 @@ endif()
 
 # Set additional libs
 set( ADDITIONAL_LIBS
-    -lglfw3
-    -lglew
-    -lm
-    -pthread
-    -ldl
+    -lGLEW -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -ldl
 )
 
 
@@ -100,3 +96,5 @@ add_executable(${PROJ_NAME}
 target_link_libraries(${PROJ_NAME}
   ${LIBRARIES}
 )
+
+target_compile_features(${PROJ_NAME} PRIVATE cxx_range_for)

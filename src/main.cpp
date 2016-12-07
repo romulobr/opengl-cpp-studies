@@ -82,6 +82,9 @@ int main() {
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
     Shader ourShader("shaders/default.vs", "shaders/default.frag");
+    GLint offset = glGetUniformLocation(ourShader.Program, "offset");
+    ourShader.Use();
+    glUniform1f(offset,0.3);
 
     GLfloat vertices[] = {
     // Positions         // Colors
@@ -110,7 +113,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Draw our first triangle
-        ourShader.Use();
+        
 
         GLfloat timeValue = glfwGetTime();
         GLfloat greenValue = (sin(timeValue) / 2) + 0.5;

@@ -17,10 +17,11 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
 
-
+GLfloat mixValue = 0.2f;
 // The MAIN function, from here we start the application and run the game loop
 int main() {
 
+    
     std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
     // Init GLFW
     glfwInit();
@@ -50,7 +51,7 @@ int main() {
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
-    Shader ourShader("shaders/default.frag", "shaders/default.vs");
+    Shader ourShader("shaders/default.vs", "shaders/default.frag");
     GLint offset = glGetUniformLocation(ourShader.Program, "offset");
     ourShader.Use();
     glUniform1f(offset,0.3);
@@ -68,9 +69,17 @@ int main() {
         1, 2, 3  // Second Triangle
     };
 
-    GLuint texture = SOIL_load_OGL_texture
+    GLuint texture1 = SOIL_load_OGL_texture
     (
         "textures/container.jpg",
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
+    );
+
+    GLuint texture2 = SOIL_load_OGL_texture
+    (
+        "textures/awesomeface.png",
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
@@ -124,10 +133,17 @@ int main() {
         GLfloat timeValue = glfwGetTime();
         GLfloat greenValue = (sin(timeValue) / 2) + 0.5;
     
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture1"), 0);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+    glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);    
+
         glBindBuffer(GL_ARRAY_BUFFER, VBO1);    
         glBindVertexArray(VAO1);
-        glBindTexture(GL_TEXTURE_2D, texture);
         
+        glUniform1f(glGetUniformLocation(ourShader.Program, "mixValue"), mixValue);    
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
@@ -145,7 +161,23 @@ int main() {
 }
 
 // Is called whenever a key is pressed/released via GLFW
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode) {
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
+    // Change value of uniform with arrow keys (sets amount of textre mix)
+    if (key == GLFW_KEY_UP && action == GLFW_PRESS)
+    {
+        mixValue += 0.1f;
+        if (mixValue >= 1.0f)
+            mixValue = 1.0f;
+    }
+    if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+    {
+        mixValue -= 0.1f;
+        if (mixValue <= 0.0f)
+            mixValue = 0.0f;
+        
+    }
 }
+

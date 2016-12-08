@@ -95,6 +95,7 @@ add_executable(${PROJ_NAME}
 # Libraries to be linked
 target_link_libraries(${PROJ_NAME}
   ${LIBRARIES}
+  ${CMAKE_SOURCE_DIR}/lib/libsoil2-debug.a
 )
 
 target_compile_features(${PROJ_NAME} PRIVATE cxx_range_for)

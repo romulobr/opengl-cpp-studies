@@ -9,6 +9,10 @@
 // GLFW
 #include <GLFW/glfw3.h>
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
 #include "shader.h"
 
 // Function prototypes
@@ -115,11 +119,19 @@ int main() {
 
 
     // Uncommenting this call will result in wireframe polygons.
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // Game loop
     while (!glfwWindowShouldClose(window)) {
         // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
+        glm::mat4 trans;
+        trans = glm::rotate(trans,(GLfloat)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+
+        glm::mat4 trans2;
+        trans2 = glm::translate(trans2, glm::vec3(-0.5f, +0.5f, 0.0f));
+        trans2 = glm::scale(trans2, (GLfloat)sin(glfwGetTime()) * glm::vec3(1.0f, 1.0f, 1.0f));
+
         glfwPollEvents();
 
         // Render
@@ -133,19 +145,26 @@ int main() {
         GLfloat timeValue = glfwGetTime();
         GLfloat greenValue = (sin(timeValue) / 2) + 0.5;
     
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture1"), 0);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-    glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);    
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture1"), 0);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
+        glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);    
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO1);    
         glBindVertexArray(VAO1);
         
-        glUniform1f(glGetUniformLocation(ourShader.Program, "mixValue"), mixValue);    
+        glUniform1f(glGetUniformLocation(ourShader.Program, "mixValue"), mixValue);
+        GLuint transformLoc = glGetUniformLocation(ourShader.Program, "transform");
+        
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glBindVertexArray(0);        
 
         // Swap the screen buffers
         glfwSwapBuffers(window);

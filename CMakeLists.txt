@@ -9,7 +9,6 @@ set(PROJ_NAME myapp)
 project(${PROJ_NAME})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v -stdlib=libc++")
 
 #set up linux search paths
 set(LIBRARY_SEARCH_PATH
@@ -69,12 +68,10 @@ set(LIBRARIES
 )
 
 if(UNIX AND NOT APPLE)
-  set(LIBRARIES ${LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/libsoil2-linux-debug.a)
-  set( ADDITIONAL_LIBS
-      -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt
-  )
+  set(LIBRARIES ${LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/libsoil2-linux-debug.a -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt)
 else()
-  SET(CMAKE_EXE_LINKER_FLAGS "-bind_at_load -framework CoreFoundation -w")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v -stdlib=libc++")
+  set(CMAKE_EXE_LINKER_FLAGS "-bind_at_load -framework CoreFoundation -w")
   set(LIBRARIES ${LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/libsoil2-apple-debug.a)
 endif ()
 

@@ -23,9 +23,9 @@ const GLuint WIDTH = 800, HEIGHT = 600;
 
 GLfloat mixValue = 0.2f;
 // The MAIN function, from here we start the application and run the game loop
-int main() {
+int main(int argc, char * argv[]) {
 
-    
+
     std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
     // Init GLFW
     glfwInit();
@@ -65,7 +65,7 @@ int main() {
      0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // Top Right
      0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // Bottom Right
     -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // Bottom Left
-    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // Top Left 
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // Top Left
     };
 
     GLuint indices[] = {  // Note that we start from 0!
@@ -111,8 +111,8 @@ int main() {
     glEnableVertexAttribArray(1);
 
     glVertexAttribPointer(2, 2, GL_FLOAT,GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(2);  
-    
+    glEnableVertexAttribArray(2);
+
     glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO1 as the currently bound vertex buffer object so afterwards we can safely unbind
 
     glBindVertexArray(0); // Unbind VAO1 (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO1, keep it bound to this VAO1
@@ -140,36 +140,36 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Draw our first triangle
-        
+
 
         GLfloat timeValue = glfwGetTime();
         GLfloat greenValue = (sin(timeValue) / 2) + 0.5;
-    
+
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
         glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture1"), 0);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
-        glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);    
+        glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);
 
-        glBindBuffer(GL_ARRAY_BUFFER, VBO1);    
+        glBindBuffer(GL_ARRAY_BUFFER, VBO1);
         glBindVertexArray(VAO1);
-        
+
         glUniform1f(glGetUniformLocation(ourShader.Program, "mixValue"), mixValue);
         GLuint transformLoc = glGetUniformLocation(ourShader.Program, "transform");
-        
+
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        glBindVertexArray(0);        
+        glBindVertexArray(0);
 
         // Swap the screen buffers
         glfwSwapBuffers(window);
     }
-    
+
     // Terminate GLFW, clearing any resources allocated by GLFW.
     // Properly de-allocate all resources once they've outlived their purpose
     glDeleteVertexArrays(1, &VAO1);
@@ -196,7 +196,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         mixValue -= 0.1f;
         if (mixValue <= 0.0f)
             mixValue = 0.0f;
-        
+
     }
 }
-

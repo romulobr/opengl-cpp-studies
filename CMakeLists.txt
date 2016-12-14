@@ -6,9 +6,10 @@ cmake_minimum_required(VERSION 2.8)
 
 set(PROJ_NAME myapp)
 
-
 project(${PROJ_NAME})
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v -stdlib=libc++")
 
 #set up linux search paths
 set(LIBRARY_SEARCH_PATH
@@ -48,7 +49,7 @@ endif()
 
 # Set additional libs
 set( ADDITIONAL_LIBS
-    -lGLEW -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -ldl
+    -lGLEW -lglfw3 -lm -pthread -ldl
 )
 
 
@@ -66,6 +67,16 @@ set(LIBRARIES
   ${X11_LIBRARIES}
   ${ADDITIONAL_LIBS}
 )
+
+if(UNIX AND NOT APPLE)
+  set(LIBRARIES ${LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/libsoil2-linux-debug.a)
+  set( ADDITIONAL_LIBS
+      -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt
+  )
+else()
+  SET(CMAKE_EXE_LINKER_FLAGS "-bind_at_load -framework CoreFoundation -w")
+  set(LIBRARIES ${LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/libsoil2-apple-debug.a)
+endif ()
 
 
 # Windows and Linux need GLEW, the OpenGL Extension Wrangler
@@ -95,7 +106,6 @@ add_executable(${PROJ_NAME}
 # Libraries to be linked
 target_link_libraries(${PROJ_NAME}
   ${LIBRARIES}
-  ${CMAKE_SOURCE_DIR}/lib/libsoil2-debug.a
 )
 
 target_compile_features(${PROJ_NAME} PRIVATE cxx_range_for)

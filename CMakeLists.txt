@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 cmake_minimum_required(VERSION 2.8)
 
-
+set(CMAKE_CXX_COMPILER "g++")
 set(PROJ_NAME myapp)
 
 project(${PROJ_NAME})
@@ -35,23 +35,6 @@ find_package(X11)
 # Find glfw header
 find_path(GLFW_INCLUDE_DIR GLFW/glfw3.h ${HEADER_SEARCH_PATH})
 
-
-# Find glfw library
-find_library(GLFW_LIBRARIES glfw3 ${LIBRARY_SEARCH_PATH})
-
-find_package(GLEW REQUIRED)
-if (GLEW_FOUND)
-    include_directories(${GLEW_INCLUDE_DIRS})
-    link_libraries(${GLEW_LIBRARIES})
-endif()
-
-
-# Set additional libs
-set( ADDITIONAL_LIBS
-    -lGLEW -lglfw3 -lm -pthread -ldl
-)
-
-
 # Include directories for this project
 set(INCLUDE_PATH
   ${OPENGL_INCLUDE_DIR}
@@ -62,35 +45,33 @@ set(INCLUDE_PATH
 # Libraries needed on all platforms for this project
 set(LIBRARIES
   ${OPENGL_LIBRARIES}
-  ${GLFW_LIBRARIES}
-  ${X11_LIBRARIES}
   ${ADDITIONAL_LIBS}
 )
 
+if(UNIX)
+  find_path(GLEW_INCLUDE_DIR GL/glew.h ${HEADER_SEARCH_PATH})
+  set(INCLUDE_PATH ${INCUDE_PATH} ${GLEW_INCLUDE_DIR})
+  find_library(GLFW_LIBRARIES glfw3 ${LIBRARY_SEARCH_PATH})
+  set( ADDITIONAL_LIBS -lGLEW -lglfw3 -lm -pthread -ldl)
+endif()
+
 if(UNIX AND NOT APPLE)
-  set(LIBRARIES ${LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/libsoil2-linux-debug.a -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt)
-else()
+  set(LIBRARIES ${LIBRARIES} ${GLFW_LIBRARIES} ${X11_LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/libsoil2-linux-debug.a -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt)
+elseif(APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v -stdlib=libc++")
   set(CMAKE_EXE_LINKER_FLAGS "-bind_at_load -framework CoreFoundation -w")
-  set(LIBRARIES ${LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/libsoil2-apple-debug.a)
+  set(LIBRARIES ${LIBRARIES} ${GLFW_LIBRARIES} ${X11_LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/libsoil2-windows-debug.a)
+else()
+
 endif ()
 
-
-# Windows and Linux need GLEW, the OpenGL Extension Wrangler
-find_path(GLEW_INCLUDE_DIR GL/glew.h
-    ${HEADER_SEARCH_PATH}
-)
-
-
-set(INCLUDE_PATH ${INCUDE_PATH}
-    ${GLEW_INCLUDE_DIR}
-)
 
  include_directories ("${PROJECT_SOURCE_DIR}/include")
 
 
 file(GLOB SOURCES
     include/*.h
+    include/**/*.h
     src/*.cpp
     src/*.c
 )

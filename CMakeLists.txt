@@ -47,11 +47,38 @@ if(UNIX)
 endif()
 
 if(UNIX AND NOT APPLE)
-  set(LIBRARIES ${GLFW_LIBRARIES} ${X11_LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/libsoil2-linux-debug.a -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lGLEW -lglfw3 -lm -pthread -ldl)
+  set(LIBRARIES
+  ${OPENGL_LIBRARIES}
+  ${GLFW_LIBRARIES}
+  ${X11_LIBRARIES}
+  ${CMAKE_SOURCE_DIR}/lib/linux/libsoil2-linux-debug.a
+  -lGL
+  -lX11
+  -lXi
+  -lXrandr
+  -lXxf86vm
+  -lXinerama
+  -lXcursor
+  -lrt
+  -lGLEW
+  -lglfw3
+  -lm
+  -pthread
+  -ldl)
 endif(UNIX AND NOT APPLE)
 
 if(APPLE)
-  set(LIBRARIES ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/apple/libsoil2-apple-debug.a -L${CMAKE_SOURCE_DIR}/lib/apple -lGLEW -lglfw3 -lm -pthread -ldl -lgsl "-framework CoreFoundation")
+  set(LIBRARIES
+  ${OPENGL_LIBRARIES}
+  ${GLFW_LIBRARIES}
+  ${CMAKE_SOURCE_DIR}/lib/apple/libsoil2-apple-debug.a
+  -lGLEW
+  -lglfw3
+  -lm
+  -pthread
+  -ldl
+  -lgsl
+  "-framework CoreFoundation")
 endif(APPLE)
 
 include_directories ("${PROJECT_SOURCE_DIR}/include")

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <math.h>
-#include "../lib/SOIL2.h"
+#include <SOIL2.h>
 // GLEW
 #define GLEW_STATIC
 

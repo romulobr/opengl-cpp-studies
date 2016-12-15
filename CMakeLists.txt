@@ -12,6 +12,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 #set up linux search paths
 set(LIBRARY_SEARCH_PATH
+  ${PROJECT_SOURCE_DIR}/lib
   /usr/local
   /opt/local
   /usr
@@ -42,12 +43,6 @@ set(INCLUDE_PATH
 )
 
 
-# Libraries needed on all platforms for this project
-set(LIBRARIES
-  ${OPENGL_LIBRARIES}
-  ${ADDITIONAL_LIBS}
-)
-
 if(UNIX)
   find_path(GLEW_INCLUDE_DIR GL/glew.h ${HEADER_SEARCH_PATH})
   set(INCLUDE_PATH ${INCUDE_PATH} ${GLEW_INCLUDE_DIR})
@@ -62,9 +57,14 @@ elseif(APPLE)
   set(CMAKE_EXE_LINKER_FLAGS "-bind_at_load -framework CoreFoundation -w")
   set(LIBRARIES ${LIBRARIES} ${GLFW_LIBRARIES} ${X11_LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/libsoil2-windows-debug.a)
 else()
-
+  set(ADDITIONAL_LIBS -l"${PROJECT_SOURCE_DIR}/lib/glew32.lib" -lglfw3)
 endif ()
 
+# Libraries needed on all platforms for this project
+set(LIBRARIES
+  ${OPENGL_LIBRARIES}
+  ${ADDITIONAL_LIBS}
+)
 
  include_directories ("${PROJECT_SOURCE_DIR}/include")
 

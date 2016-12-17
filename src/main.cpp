@@ -22,6 +22,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 const GLuint WIDTH = 800, HEIGHT = 600;
 
 GLfloat mixValue = 0.2f;
+GLfloat cameraX = 0.0;
 // The MAIN function, from here we start the application and run the game loop
 int main(int argc, char * argv[]) {
 
@@ -155,6 +156,7 @@ glm::vec3 cubePositions[] = {
 
     // Uncommenting this call will result in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    float angle = 0.0;
 
     // Game loop
     while (!glfwWindowShouldClose(window)) {
@@ -169,7 +171,6 @@ glm::vec3 cubePositions[] = {
 
         // Draw our first triangle
 
-
         GLfloat timeValue = glfwGetTime();
 
         glActiveTexture(GL_TEXTURE0);
@@ -182,16 +183,15 @@ glm::vec3 cubePositions[] = {
 
         ourShader.Use();
 
-        glm::mat4 proj = glm::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f);
+        angle++;
 
         glm::mat4 model;
         model = glm::rotate(model, (GLfloat)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
 
         glm::mat4 view;
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
+        view = glm::translate(view, glm::vec3(cameraX, 0.0f, -3.0f));
         glm::mat4 projection;
-        projection = glm::perspective(glm::radians(45.0f), 800 / 600.0f, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(90.0f), 800 / 600.0f, 0.1f, 50.0f);
 
         GLint modelLoc = glGetUniformLocation(ourShader.Program, "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -212,7 +212,11 @@ glm::vec3 cubePositions[] = {
           glm::mat4 model;
           model = glm::translate(model, cubePositions[i]);
           GLfloat angle = 20.0f * i;
-          model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+          if(i % 3 == 0){
+            model = glm::rotate(model, timeValue * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+          } else{
+            model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+          }
           glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
           glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -238,17 +242,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
     // Change value of uniform with arrow keys (sets amount of textre mix)
-    if (key == GLFW_KEY_UP && action == GLFW_PRESS)
+    if (key == GLFW_KEY_UP)
     {
-        mixValue += 0.1f;
-        if (mixValue >= 1.0f)
-            mixValue = 1.0f;
+        cameraX += 0.1f;
     }
-    if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+    if (key == GLFW_KEY_DOWN)
     {
-        mixValue -= 0.1f;
-        if (mixValue <= 0.0f)
-            mixValue = 0.0f;
-
+        cameraX -= 0.1f;
     }
 }
